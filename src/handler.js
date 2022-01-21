@@ -4,7 +4,7 @@ const { nanoid } = require("nanoid");
 const saveBooksHandler = (request, h) => {
   const {
     name,
-    year,
+    years,
     author,
     summary,
     publisher,
@@ -12,6 +12,7 @@ const saveBooksHandler = (request, h) => {
     readPage,
     reading,
   } = request.payload;
+
 
   if (!name) {
     const response = h.response({
@@ -39,6 +40,16 @@ const saveBooksHandler = (request, h) => {
     id,
     name,
     publisher,
+    years,
+    author,
+    summary,
+    publisher,
+    pageCount,
+    readPage,
+    finished,
+    reading,
+    insertedAt,
+    updatedAt
   };
   books.push(newBook);
   isSuccess = books.filter((book) => book.id === id).length > 0;
@@ -49,7 +60,7 @@ const saveBooksHandler = (request, h) => {
       message: "Buku berhasil ditambahkan",
       data: {
         bookId: id,
-        nama:name,
+        name:name,
         publisher:publisher,
         
       },
@@ -65,6 +76,28 @@ const saveBooksHandler = (request, h) => {
     response.code(201);
     return response;
   }
+  if(!name){
+    const response = h.response({
+      status:"fail",
+      message:"Gagal menambahkan buku. Mohon isi nama buku"
+    });
+    response.code(400);
+    return response;
+  }
+  if(readPage > pageCount){
+    const response = h.response({
+      status:"fail",
+      message:"Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount"
+    });
+    response.code(400);
+    return response;
+  }
+  const resoponse = h.resoponse({
+    status:"error",
+    message:"Buku gagal ditambahkan"
+  });
+  resoponse.code(500);
+  return resoponse;
 };
 
 //getAllBooks
@@ -99,6 +132,11 @@ const getDetailIdWithCorrectId = (request, h) => {
   response.code(404);
   return response;
 };
+
+//Get Books by name
+// const getAllBooksWithName = (request, h) =>{
+//   const {name = "Dicoding"} = request.params;
+// }
 
 const editBooksByIdHandler = (request, h) => {
   const {
